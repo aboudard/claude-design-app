@@ -3,6 +3,7 @@
 Instructions communes à tous les assistants IA (Claude Code, GitHub Copilot, Cline, Roo, Continue…).
 Les spécificités Claude sont dans `CLAUDE.md`.
 L'historique de conception et les décisions (le _pourquoi_) sont dans `docs/historique-claude.md`.
+Les règles de création des PR (labels obligatoires) sont dans `docs/pull-requests.md`.
 
 ## Projet
 
