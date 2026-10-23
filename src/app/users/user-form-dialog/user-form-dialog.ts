@@ -109,6 +109,9 @@ export class UserFormDialog {
     effect(() => {
       if (!this.visible()) return;
       const u = this.user();
+      // untracked : on lit `model` et on écrit dedans sans que l'effect en dépende.
+      // Il ne doit se relancer que si `visible` ou `user` changent, sinon chaque saisie
+      // réinitialiserait le formulaire.
       untracked(() => {
         this.model.set(u ? toFormValue(u) : emptyForm());
         this.form().reset();
@@ -121,6 +124,8 @@ export class UserFormDialog {
     return s.invalid() && (s.touched() || s.dirty());
   }
   protected submit(event: Event): void {
+    // preventDefault : on gère l'envoi nous-mêmes ; sans cela le navigateur
+    // soumettrait le <form> et rechargerait la page.
     event.preventDefault();
     if (this.form().invalid()) {
       this.form().markAsTouched();
