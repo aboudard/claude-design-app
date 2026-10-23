@@ -107,6 +107,6 @@
 
   <ng-template #footer>
     <p-button label="Annuler" severity="secondary" [text]="true" (onClick)="visible.set(false)" />
-    <p-button label="Enregistrer" icon="pi pi-check" type="submit" form="user-form" />
+    <p-button label="Enregistrer" icon="pi pi-check" (onClick)="submit($event)" />
   </ng-template>
 </p-dialog>

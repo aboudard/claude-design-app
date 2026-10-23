@@ -59,6 +59,18 @@ describe('UserFormDialog', () => {
     expect(document.getElementById('f-active')).not.toBeNull();
   });
 
+  it('émet la sauvegarde au clic sur le bouton Enregistrer', async () => {
+    const { fixture, emitted } = await setup(user);
+    const save = [...document.querySelectorAll('button')].find(
+      (b) => b.textContent?.trim() === 'Enregistrer',
+    ) as HTMLButtonElement;
+
+    save.click();
+    await fixture.whenStable();
+
+    expect(emitted.length).toBe(1);
+  });
+
   it("n'émet rien quand le formulaire est invalide", async () => {
     const { cmp, emitted } = await setup(null);
     expect(cmp.form().valid()).toBe(false);
