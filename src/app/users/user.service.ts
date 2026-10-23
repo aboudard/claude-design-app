@@ -1,170 +1,88 @@
-import { Service, computed, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { InjectionToken, Service, computed, inject, signal } from '@angular/core';
+import { Observable, forkJoin, map, of, tap } from 'rxjs';
 import { User, UserDraft } from './user.model';
 
-/**
- * Store en mémoire basé sur les signals.
- * Pour brancher une API REST, remplacez le corps des méthodes par des appels HttpClient
- * (ou httpResource) et mettez à jour `_users` à la réception des réponses.
- */
+/** URL de base de l'API utilisateurs (proxy de dev : /api → json-server, voir proxy.conf.json). */
+export const USERS_API_URL = new InjectionToken<string>('USERS_API_URL', {
+  factory: () => '/api/users',
+});
+
+/** Représentation JSON de l'API : la date de validité est une chaîne `aaaa-MM-jj`. */
+type UserDto = Omit<User, 'validUntil'> & { validUntil: string };
+
+const pad = (n: number) => String(n).padStart(2, '0');
+
+export const toDto = (u: UserDraft): Omit<UserDto, 'id'> & { id?: string } => ({
+  ...u,
+  validUntil: `${u.validUntil.getFullYear()}-${pad(u.validUntil.getMonth() + 1)}-${pad(u.validUntil.getDate())}`,
+});
+
+export const fromDto = (dto: UserDto): User => {
+  const [y, m, d] = dto.validUntil.slice(0, 10).split('-').map(Number);
+  return { ...dto, validUntil: new Date(y, m - 1, d) };
+};
+
+/** Store signals alimenté par l'API REST (GET/POST/PUT/DELETE sur `USERS_API_URL`). */
 @Service()
 export class UserService {
-  private readonly _users = signal<User[]>(MOCK_USERS);
-  private nextId = 1011;
+  private readonly http = inject(HttpClient);
+  private readonly url = inject(USERS_API_URL);
+  private readonly _users = signal<User[]>([]);
+  private readonly _loading = signal(false);
+  private readonly _error = signal<string | null>(null);
 
   readonly users = this._users.asReadonly();
+  readonly loading = this._loading.asReadonly();
+  readonly error = this._error.asReadonly();
   readonly activeCount = computed(() => this._users().filter((u) => u.active).length);
+
+  constructor() {
+    this.load();
+  }
+
+  load(): void {
+    this._loading.set(true);
+    this._error.set(null);
+    this.http.get<UserDto[]>(this.url).subscribe({
+      next: (list) => {
+        this._users.set(list.map(fromDto));
+        this._loading.set(false);
+      },
+      error: () => {
+        this._error.set('Impossible de charger les utilisateurs.');
+        this._loading.set(false);
+      },
+    });
+  }
 
   getById(id: string): User | undefined {
     return this._users().find((u) => u.id === id);
   }
 
-  save(draft: UserDraft): User {
+  save(draft: UserDraft): Observable<User> {
     if (draft.id) {
-      const updated = { ...draft, id: draft.id } as User;
-      this._users.update((list) => list.map((u) => (u.id === updated.id ? updated : u)));
-      return updated;
+      return this.http.put<UserDto>(`${this.url}/${draft.id}`, toDto(draft)).pipe(
+        map(fromDto),
+        tap((updated) =>
+          this._users.update((list) => list.map((u) => (u.id === updated.id ? updated : u))),
+        ),
+      );
     }
-    const created: User = { ...draft, id: `U-${this.nextId++}` };
-    this._users.update((list) => [...list, created]);
-    return created;
+    return this.http.post<UserDto>(this.url, toDto(draft)).pipe(
+      map(fromDto),
+      tap((created) => this._users.update((list) => [...list, created])),
+    );
   }
 
-  delete(ids: string[]): void {
-    const toRemove = new Set(ids);
-    this._users.update((list) => list.filter((u) => !toRemove.has(u.id)));
+  delete(ids: string[]): Observable<void> {
+    if (!ids.length) return of(undefined);
+    return forkJoin(ids.map((id) => this.http.delete<void>(`${this.url}/${id}`))).pipe(
+      tap(() => {
+        const removed = new Set(ids);
+        this._users.update((list) => list.filter((u) => !removed.has(u.id)));
+      }),
+      map(() => undefined),
+    );
   }
 }
-
-const u = (
-  id: number,
-  name: string,
-  active: boolean,
-  validUntil: string,
-  role: string,
-  street: string,
-  postalCode: string,
-  city: string,
-  qualifications: string[],
-): User => ({
-  id: `U-${id}`,
-  name,
-  email:
-    name
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase()
-      .replace(' ', '.') + '@exemple.fr',
-  active,
-  validUntil: new Date(validUntil),
-  role,
-  phone: `+33 6 12 00 00 ${String(id - 1000).padStart(2, '0')}`,
-  address: { street, postalCode, city },
-  qualifications,
-});
-
-const MOCK_USERS: User[] = [
-  u(
-    1001,
-    'Camille Martin',
-    true,
-    '2027-06-30',
-    'Administratrice',
-    '12 rue des Lilas',
-    '75011',
-    'Paris',
-    ['Angular', 'TypeScript', 'Scrum Master', 'ITIL v4'],
-  ),
-  u(
-    1002,
-    'Lucas Bernard',
-    true,
-    '2026-12-31',
-    'Développeur',
-    '8 avenue Jean Jaurès',
-    '69007',
-    'Lyon',
-    ['Java', 'Spring Boot', 'Kubernetes'],
-  ),
-  u(
-    1003,
-    'Léa Dubois',
-    false,
-    '2026-03-15',
-    'Analyste',
-    '3 place du Capitole',
-    '31000',
-    'Toulouse',
-    ['SQL', 'Power BI'],
-  ),
-  u(
-    1004,
-    'Hugo Thomas',
-    true,
-    '2028-01-15',
-    'Chef de projet',
-    '45 quai des Chartrons',
-    '33000',
-    'Bordeaux',
-    ['PMP', 'Prince2', 'SAFe'],
-  ),
-  u(
-    1005,
-    'Chloé Robert',
-    true,
-    '2027-09-01',
-    'Designer UX',
-    '17 rue de la République',
-    '13001',
-    'Marseille',
-    ['Figma', 'Accessibilité RGAA', 'Design System'],
-  ),
-  u(
-    1006,
-    'Nathan Richard',
-    false,
-    '2026-08-31',
-    'Testeur',
-    '22 boulevard Carnot',
-    '59000',
-    'Lille',
-    ['ISTQB', 'Cypress'],
-  ),
-  u(1007, 'Manon Petit', true, '2027-03-31', 'Architecte', '5 rue du Château', '44000', 'Nantes', [
-    'AWS',
-    'TOGAF',
-    'Terraform',
-  ]),
-  u(
-    1008,
-    'Louis Durand',
-    true,
-    '2026-11-30',
-    'Développeur',
-    '9 allée des Tilleuls',
-    '67000',
-    'Strasbourg',
-    ['Angular', 'RxJS', 'NgRx'],
-  ),
-  u(
-    1009,
-    'Inès Leroy',
-    false,
-    '2027-02-28',
-    'Data Scientist',
-    '30 rue Nationale',
-    '37000',
-    'Tours',
-    ['Python', 'Machine Learning'],
-  ),
-  u(
-    1010,
-    'Gabriel Moreau',
-    true,
-    '2027-12-31',
-    'DevOps',
-    '14 cours Mirabeau',
-    '13100',
-    'Aix-en-Provence',
-    ['GitLab CI', 'Docker', 'Linux'],
-  ),
-];

@@ -51,6 +51,8 @@ export class UserList {
 
   protected readonly users = this.userService.users;
   protected readonly activeCount = this.userService.activeCount;
+  protected readonly loading = this.userService.loading;
+  protected readonly loadError = this.userService.error;
 
   /** Lignes cochées dans la table (liaison [(selection)]). */
   protected readonly selected = signal<User[]>([]);
@@ -99,6 +101,10 @@ export class UserList {
   protected readonly initials = initials;
   protected readonly isExpired = (u: User) => isExpired(u);
 
+  protected reload(): void {
+    this.userService.load();
+  }
+
   protected view(user: User): void {
     this.current.set(user);
     this.detailVisible.set(true);
@@ -115,16 +121,20 @@ export class UserList {
   }
 
   protected onSaved(draft: UserDraft): void {
-    const saved = this.userService.save(draft);
-    // Garde la sélection cohérente avec les nouvelles références d'objets.
-    this.selected.update((sel) => sel.map((s) => (s.id === saved.id ? saved : s)));
-    this.messages.add({
-      severity: 'success',
-      summary: 'Succès',
-      detail: draft.id
-        ? `Modifications enregistrées pour « ${saved.name} ».`
-        : `Utilisateur « ${saved.name} » créé.`,
-      life: 3000,
+    this.userService.save(draft).subscribe({
+      next: (saved) => {
+        // Garde la sélection cohérente avec les nouvelles références d'objets.
+        this.selected.update((sel) => sel.map((s) => (s.id === saved.id ? saved : s)));
+        this.messages.add({
+          severity: 'success',
+          summary: 'Succès',
+          detail: draft.id
+            ? `Modifications enregistrées pour « ${saved.name} ».`
+            : `Utilisateur « ${saved.name} » créé.`,
+          life: 3000,
+        });
+      },
+      error: () => this.notifyError("L'enregistrement a échoué."),
     });
   }
 
@@ -152,16 +162,28 @@ export class UserList {
       acceptButtonProps: { label: 'Supprimer', severity: 'danger', icon: 'pi pi-trash' },
       accept: () => {
         const ids = targets.map((t) => t.id);
-        this.userService.delete(ids);
-        this.selected.update((sel) => sel.filter((s) => !ids.includes(s.id)));
-        this.messages.add({
-          severity: 'success',
-          summary: 'Succès',
-          detail:
-            ids.length > 1 ? `${ids.length} utilisateurs supprimés.` : 'Utilisateur supprimé.',
-          life: 3000,
+        this.userService.delete(ids).subscribe({
+          next: () => {
+            this.selected.update((sel) => sel.filter((s) => !ids.includes(s.id)));
+            this.messages.add({
+              severity: 'success',
+              summary: 'Succès',
+              detail:
+                ids.length > 1 ? `${ids.length} utilisateurs supprimés.` : 'Utilisateur supprimé.',
+              life: 3000,
+            });
+          },
+          error: () => {
+            // Suppression partielle possible : on resynchronise avec le serveur.
+            this.userService.load();
+            this.notifyError('La suppression a échoué.');
+          },
         });
       },
     });
+  }
+
+  private notifyError(detail: string): void {
+    this.messages.add({ severity: 'error', summary: 'Erreur', detail, life: 5000 });
   }
 }

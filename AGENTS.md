@@ -20,14 +20,15 @@ chips), formulaire de création / édition. Interface en **français**.
 
 ## Commandes
 
-| But                                               | Commande                                                       |
-| ------------------------------------------------- | -------------------------------------------------------------- |
-| Serveur de dev                                    | `npm start` (http://localhost:4200)                            |
-| Build rapide (vérif. de compilation)              | `npm run build:dev`                                            |
-| Build production                                  | `npm run build` (inline les Google Fonts → nécessite Internet) |
-| Tests (une passe)                                 | `npm test`                                                     |
-| Formatage                                         | `npm run format` / `npm run format:check`                      |
-| **Vérification complète avant de rendre la main** | `npm run verify`                                               |
+| But                                               | Commande                                                              |
+| ------------------------------------------------- | --------------------------------------------------------------------- |
+| Serveur de dev                                    | `npm start` (http://localhost:4200) — nécessite l'API : `npm run api` |
+| API fictive (json-server, port 3000)              | `npm run api` (données : `mock-api/db.json`)                          |
+| Build rapide (vérif. de compilation)              | `npm run build:dev`                                                   |
+| Build production                                  | `npm run build` (inline les Google Fonts → nécessite Internet)        |
+| Tests (une passe)                                 | `npm test`                                                            |
+| Formatage                                         | `npm run format` / `npm run format:check`                             |
+| **Vérification complète avant de rendre la main** | `npm run verify`                                                      |
 
 Générer avec le CLI : `npx ng g c users/mon-composant` (pas de suffixe `.component`, conforme Angular 20+).
 
@@ -40,7 +41,7 @@ src/app/
 ├── theme/                   preset Aura rouge, traductions PrimeNG
 └── users/
     ├── user.model.ts        User, Address, UserDraft, helpers purs (isExpired, initials)
-    ├── user.service.ts      store signals en mémoire (MOCK_USERS) — point d'entrée futur de l'API
+    ├── user.service.ts      store signals alimenté par l'API REST (HttpClient, `USERS_API_URL` = /api/users)
     ├── user-list/           p-table, filtres, sélection, ConfirmDialog, Toast
     ├── user-detail-dialog/  p-dialog lecture seule
     └── user-form-dialog/    p-dialog + Signal Forms (création / édition)
