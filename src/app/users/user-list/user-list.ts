@@ -16,7 +16,7 @@ import { ToastModule } from 'primeng/toast';
 import { TooltipModule } from 'primeng/tooltip';
 
 import { UserService } from '../user.service';
-import { StatusFilter, User, UserDraft, initials, isExpired } from '../user.model';
+import { StatusFilter, User, UserDraft, initials, isExpired, toCsvValue } from '../user.model';
 import { UserDetailDialog } from '../user-detail-dialog/user-detail-dialog';
 import { UserFormDialog } from '../user-form-dialog/user-form-dialog';
 
@@ -83,6 +83,7 @@ export class UserList {
   protected readonly formVisible = signal(false);
   protected readonly current = signal<User | null>(null);
 
+  protected readonly exportValue = ({ data }: { data: unknown }) => toCsvValue(data);
   protected readonly initials = initials;
   protected readonly isExpired = (u: User) => isExpired(u);
 

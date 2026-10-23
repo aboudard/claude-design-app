@@ -1,6 +1,17 @@
-import { initials, isExpired } from './user.model';
+import { initials, isExpired, toCsvValue } from './user.model';
 
 describe('user.model', () => {
+  describe('toCsvValue', () => {
+    it('formate les dates en jj/MM/aaaa', () => {
+      expect(toCsvValue(new Date(2027, 0, 5))).toBe('05/01/2027');
+    });
+
+    it('échappe les guillemets et convertit les autres valeurs', () => {
+      expect(toCsvValue('a "b"')).toBe('a ""b""');
+      expect(toCsvValue(true)).toBe('true');
+    });
+  });
+
   describe('initials', () => {
     it('prend la première lettre des deux premiers mots, en majuscules', () => {
       expect(initials('camille martin')).toBe('CM');
