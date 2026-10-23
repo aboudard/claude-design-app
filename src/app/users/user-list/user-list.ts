@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, untracked } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -77,6 +77,16 @@ export class UserList {
         (!q || `${u.id} ${u.name} ${u.email}`.toLowerCase().includes(q)),
     );
   });
+
+  constructor() {
+    // Une ligne masquée par un filtre ne doit plus être sélectionnée (évite une suppression en masse invisible).
+    effect(() => {
+      const visible = new Set(this.filteredUsers().map((u) => u.id));
+      const sel = untracked(() => this.selected());
+      const kept = sel.filter((s) => visible.has(s.id));
+      if (kept.length !== sel.length) this.selected.set(kept);
+    });
+  }
 
   // Dialogs
   protected readonly detailVisible = signal(false);
