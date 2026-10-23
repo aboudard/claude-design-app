@@ -1,0 +1,78 @@
+<p-dialog
+  header="Détails de l'utilisateur"
+  [(visible)]="visible"
+  [modal]="true"
+  [draggable]="false"
+  [dismissableMask]="true"
+  [style]="{ width: '36rem' }"
+  [breakpoints]="{ '640px': '95vw' }"
+>
+  @if (user(); as u) {
+    <div class="identity">
+      <p-avatar [label]="initials()" shape="circle" size="xlarge" class="avatar" />
+      <div class="identity-text">
+        <div class="name">{{ u.name }}</div>
+        <div class="muted">{{ u.role }}</div>
+      </div>
+      <p-tag
+        [value]="u.active ? 'Actif' : 'Inactif'"
+        [severity]="u.active ? 'success' : 'secondary'"
+      />
+    </div>
+
+    <dl class="fields">
+      <div>
+        <dt>Identifiant</dt>
+        <dd>{{ u.id }}</dd>
+      </div>
+      <div>
+        <dt>Date de validité</dt>
+        <dd>
+          {{ u.validUntil | date: 'dd/MM/yyyy' }}
+          @if (expired()) {
+            <p-tag value="Expirée" severity="warn" class="ml-2" />
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>Email</dt>
+        <dd>
+          <a [href]="'mailto:' + u.email">{{ u.email }}</a>
+        </dd>
+      </div>
+      <div>
+        <dt>Téléphone</dt>
+        <dd>{{ u.phone }}</dd>
+      </div>
+      <div class="full">
+        <dt>Adresse</dt>
+        <dd class="address">
+          <i class="pi pi-map-marker" aria-hidden="true"></i>
+          <span>
+            {{ u.address.street }}<br />
+            {{ u.address.postalCode }} {{ u.address.city }}
+          </span>
+        </dd>
+      </div>
+    </dl>
+
+    <h3 class="section-title">Qualifications</h3>
+    <div class="chips">
+      @for (q of u.qualifications; track q) {
+        <p-chip [label]="q" />
+      } @empty {
+        <span class="muted">Aucune qualification renseignée.</span>
+      }
+    </div>
+  }
+
+  <ng-template #footer>
+    <p-button
+      label="Fermer"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="visible.set(false)"
+    />
+    <p-button label="Modifier" icon="pi pi-pencil" (onClick)="onEdit()" />
+  </ng-template>
+</p-dialog>

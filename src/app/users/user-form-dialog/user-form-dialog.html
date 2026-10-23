@@ -1,0 +1,133 @@
+<p-dialog
+  [header]="title()"
+  [(visible)]="visible"
+  [modal]="true"
+  [draggable]="false"
+  [style]="{ width: '40rem' }"
+  [breakpoints]="{ '640px': '95vw' }"
+>
+  <form [formGroup]="form" (ngSubmit)="submit()" id="user-form" class="form" novalidate>
+    @if (user(); as u) {
+      <div class="field">
+        <label for="f-id">Identifiant</label>
+        <input pInputText id="f-id" [value]="u.id" disabled />
+      </div>
+    }
+
+    <div class="field">
+      <label for="f-name">Nom complet *</label>
+      <input
+        pInputText
+        id="f-name"
+        formControlName="name"
+        [invalid]="invalid('name')"
+        autocomplete="name"
+      />
+      @if (invalid('name')) {
+        <p-message severity="error" size="small" variant="simple"
+          >Le nom est obligatoire.</p-message
+        >
+      }
+    </div>
+
+    <div class="field">
+      <label for="f-email">Email *</label>
+      <input
+        pInputText
+        id="f-email"
+        type="email"
+        formControlName="email"
+        [invalid]="invalid('email')"
+        autocomplete="email"
+      />
+      @if (invalid('email')) {
+        <p-message severity="error" size="small" variant="simple"
+          >Une adresse email valide est obligatoire.</p-message
+        >
+      }
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="f-date">Date de validité *</label>
+        <p-datepicker
+          inputId="f-date"
+          formControlName="validUntil"
+          dateFormat="dd/mm/yy"
+          [showIcon]="true"
+          [showButtonBar]="true"
+          [invalid]="invalid('validUntil')"
+          appendTo="body"
+          fluid
+        />
+        @if (invalid('validUntil')) {
+          <p-message severity="error" size="small" variant="simple"
+            >La date de validité est obligatoire.</p-message
+          >
+        }
+      </div>
+      <div class="field">
+        <label for="f-active">Statut</label>
+        <div class="switch">
+          <p-toggleswitch inputId="f-active" formControlName="active" />
+          <span>{{ form.controls.active.value ? 'Actif' : 'Inactif' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="f-role">Fonction</label>
+        <input pInputText id="f-role" formControlName="role" />
+      </div>
+      <div class="field">
+        <label for="f-phone">Téléphone</label>
+        <input pInputText id="f-phone" type="tel" formControlName="phone" autocomplete="tel" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="f-street">Adresse</label>
+      <textarea
+        pTextarea
+        id="f-street"
+        formControlName="street"
+        rows="2"
+        autocomplete="street-address"
+      ></textarea>
+    </div>
+
+    <div class="row row-address">
+      <div class="field">
+        <label for="f-cp">Code postal</label>
+        <input
+          pInputText
+          id="f-cp"
+          formControlName="postalCode"
+          inputmode="numeric"
+          maxlength="5"
+          [invalid]="invalid('postalCode')"
+        />
+      </div>
+      <div class="field">
+        <label for="f-city">Ville</label>
+        <input pInputText id="f-city" formControlName="city" />
+      </div>
+    </div>
+
+    <div class="field" role="group" aria-labelledby="f-quals-label">
+      <span id="f-quals-label" class="label">Qualifications</span>
+      <p-inputtags
+        formControlName="qualifications"
+        placeholder="Saisir puis Entrée"
+        [addOnBlur]="true"
+        fluid
+      />
+    </div>
+  </form>
+
+  <ng-template #footer>
+    <p-button label="Annuler" severity="secondary" [text]="true" (onClick)="visible.set(false)" />
+    <p-button label="Enregistrer" icon="pi pi-check" type="submit" form="user-form" />
+  </ng-template>
+</p-dialog>

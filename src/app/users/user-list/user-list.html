@@ -1,0 +1,181 @@
+<p-toast position="top-right" />
+<p-confirmdialog [style]="{ width: '28rem' }" [breakpoints]="{ '640px': '95vw' }" />
+
+<header class="page-header">
+  <div>
+    <h1>Gestion des utilisateurs</h1>
+    <p class="muted">{{ users().length }} utilisateurs · {{ activeCount() }} actifs</p>
+  </div>
+  <div class="actions">
+    <p-button
+      label="Exporter"
+      icon="pi pi-download"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="dt.exportCSV()"
+    />
+    <p-button label="Nouvel utilisateur" icon="pi pi-plus" (onClick)="create()" />
+  </div>
+</header>
+
+<section class="card">
+  <p-table
+    #dt
+    [value]="filteredUsers()"
+    [(selection)]="selected"
+    dataKey="id"
+    [paginator]="true"
+    [rows]="10"
+    [rowsPerPageOptions]="[10, 25, 50]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Affichage de {first} à {last} sur {totalRecords} utilisateurs"
+    [columns]="[
+      { field: 'id', header: 'ID' },
+      { field: 'name', header: 'Nom' },
+      { field: 'email', header: 'Email' },
+      { field: 'active', header: 'Actif' },
+      { field: 'validUntil', header: 'Date de validité' },
+    ]"
+    exportFilename="utilisateurs"
+    [tableStyle]="{ 'min-width': '60rem' }"
+    sortField="id"
+    [sortOrder]="1"
+  >
+    <ng-template #caption>
+      <div class="table-toolbar">
+        <div class="bulk">
+          <p-button
+            label="Supprimer la sélection"
+            icon="pi pi-trash"
+            severity="danger"
+            [outlined]="true"
+            [disabled]="!selected().length"
+            (onClick)="confirmBulkDelete()"
+          />
+          @if (selected().length) {
+            <p-tag
+              [value]="
+                selected().length + (selected().length > 1 ? ' sélectionnés' : ' sélectionné')
+              "
+            />
+            <p-button
+              label="Désélectionner"
+              [text]="true"
+              severity="secondary"
+              size="small"
+              (onClick)="selected.set([])"
+            />
+          }
+        </div>
+        <div class="filters">
+          <p-selectbutton
+            [options]="statusOptions()"
+            [ngModel]="status()"
+            (ngModelChange)="status.set($event ?? 'all')"
+            optionLabel="label"
+            optionValue="value"
+            [allowEmpty]="false"
+            ariaLabelledBy="status-filter-label"
+          />
+          <span id="status-filter-label" class="sr-only">Filtrer par statut</span>
+          <p-iconfield iconPosition="left">
+            <p-inputicon class="pi pi-search" />
+            <input
+              pInputText
+              type="search"
+              [ngModel]="search()"
+              (ngModelChange)="search.set($event)"
+              placeholder="Rechercher par nom, email, ID…"
+              aria-label="Rechercher un utilisateur"
+            />
+          </p-iconfield>
+        </div>
+      </div>
+    </ng-template>
+
+    <ng-template #header>
+      <tr>
+        <th style="width: 3.5rem"><p-table-header-checkbox /></th>
+        <th pSortableColumn="id" style="width: 8rem">ID <p-sort-icon field="id" /></th>
+        <th pSortableColumn="name">Nom <p-sort-icon field="name" /></th>
+        <th pSortableColumn="email">Email <p-sort-icon field="email" /></th>
+        <th pSortableColumn="active" style="width: 8rem">Statut <p-sort-icon field="active" /></th>
+        <th pSortableColumn="validUntil" style="width: 13rem">
+          Date de validité <p-sort-icon field="validUntil" />
+        </th>
+        <th style="width: 10rem; text-align: right">Actions</th>
+      </tr>
+    </ng-template>
+
+    <ng-template #body let-user>
+      <tr [pSelectableRow]="user">
+        <td><p-table-checkbox [value]="user" /></td>
+        <td class="muted tabular">{{ user.id }}</td>
+        <td>
+          <div class="name-cell">
+            <p-avatar [label]="initials(user.name)" shape="circle" class="avatar" />
+            <span class="name">{{ user.name }}</span>
+          </div>
+        </td>
+        <td>{{ user.email }}</td>
+        <td>
+          <p-tag
+            [value]="user.active ? 'Actif' : 'Inactif'"
+            [severity]="user.active ? 'success' : 'secondary'"
+          />
+        </td>
+        <td>
+          <span class="tabular" [class.expired]="isExpired(user)">{{
+            user.validUntil | date: 'dd/MM/yyyy'
+          }}</span>
+          @if (isExpired(user)) {
+            <p-tag value="Expirée" severity="warn" class="ml-2" />
+          }
+        </td>
+        <td>
+          <div class="row-actions">
+            <p-button
+              icon="pi pi-eye"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              pTooltip="Visualiser"
+              tooltipPosition="top"
+              [ariaLabel]="'Visualiser ' + user.name"
+              (onClick)="view(user)"
+            />
+            <p-button
+              icon="pi pi-pencil"
+              [rounded]="true"
+              [text]="true"
+              severity="secondary"
+              pTooltip="Éditer"
+              tooltipPosition="top"
+              [ariaLabel]="'Éditer ' + user.name"
+              (onClick)="edit(user)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              [text]="true"
+              severity="danger"
+              pTooltip="Supprimer"
+              tooltipPosition="top"
+              [ariaLabel]="'Supprimer ' + user.name"
+              (onClick)="confirmDelete(user)"
+            />
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="7" class="empty">Aucun utilisateur ne correspond à votre recherche.</td>
+      </tr>
+    </ng-template>
+  </p-table>
+</section>
+
+<app-user-detail-dialog [user]="current()" [(visible)]="detailVisible" (edit)="edit($event)" />
+<app-user-form-dialog [user]="current()" [(visible)]="formVisible" (saved)="onSaved($event)" />

@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "angular-cli": {
+      "command": "node",
+      "args": ["node_modules/@angular/cli/bin/ng.js", "mcp"]
+    },
+    "primeng": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@primeng/mcp@22"]
+    }
+  }
+}

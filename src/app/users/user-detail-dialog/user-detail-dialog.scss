@@ -1,0 +1,93 @@
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+
+  .identity-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--p-text-color);
+  }
+}
+
+:host ::ng-deep .avatar {
+  background: var(--p-primary-100);
+  color: var(--p-primary-700);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--p-text-muted-color);
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.5rem;
+  margin: 0 0 1.25rem;
+  padding: 1rem;
+  border-radius: var(--p-border-radius-md);
+  background: var(--p-content-hover-background);
+
+  .full {
+    grid-column: 1 / -1;
+  }
+
+  dt {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--p-text-muted-color);
+    margin-bottom: 0.25rem;
+  }
+
+  dd {
+    margin: 0;
+    font-weight: 500;
+    color: var(--p-text-color);
+    word-break: break-word;
+  }
+
+  a {
+    color: var(--p-primary-700);
+    text-decoration: none;
+  }
+
+  .address {
+    display: flex;
+    gap: 0.5rem;
+
+    .pi {
+      margin-top: 0.2rem;
+      color: var(--p-text-muted-color);
+    }
+  }
+}
+
+.ml-2 {
+  margin-left: 0.5rem;
+}
+
+.section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 0 0 0.625rem;
+  color: var(--p-text-color);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (max-width: 480px) {
+  .fields {
+    grid-template-columns: 1fr;
+  }
+}

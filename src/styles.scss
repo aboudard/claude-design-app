@@ -1,0 +1,17 @@
+@use 'primeicons/primeicons.css';
+
+/* Ordre des couches CSS : vos styles applicatifs (theme/base) puis PrimeNG. */
+@layer theme, base, primeng;
+
+@layer base {
+  html {
+    font-size: 14px;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--p-surface-50);
+    color: var(--p-text-color);
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "angular-cli": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["ng", "mcp"]
+    },
+    "primeng": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@primeng/mcp@22"]
+    }
+  }
+}
