@@ -82,6 +82,8 @@ export class UserList {
     // Une ligne masquée par un filtre ne doit plus être sélectionnée (évite une suppression en masse invisible).
     effect(() => {
       const visible = new Set(this.filteredUsers().map((u) => u.id));
+      // untracked : l'effect ne doit dépendre que du filtre ; lire `selected` ici le ferait
+      // se réexécuter à chaque cochage et boucler, puisqu'il écrit lui-même dans ce signal.
       const sel = untracked(() => this.selected());
       const kept = sel.filter((s) => visible.has(s.id));
       if (kept.length !== sel.length) this.selected.set(kept);
