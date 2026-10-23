@@ -22,6 +22,7 @@
   <p-table
     #dt
     [value]="filteredUsers()"
+    [loading]="loading()"
     [(selection)]="selected"
     dataKey="id"
     [paginator]="true"
@@ -172,7 +173,14 @@
 
     <ng-template #emptymessage>
       <tr>
-        <td colspan="7" class="empty">Aucun utilisateur ne correspond à votre recherche.</td>
+        <td colspan="7" class="empty">
+          @if (loadError(); as err) {
+            {{ err }}
+            <p-button label="Réessayer" [text]="true" size="small" (onClick)="reload()" />
+          } @else {
+            Aucun utilisateur ne correspond à votre recherche.
+          }
+        </td>
       </tr>
     </ng-template>
   </p-table>

@@ -1,0 +1,154 @@
+{
+  "users": [
+    {
+      "id": "U-1001",
+      "name": "Camille Martin",
+      "email": "camille.martin@exemple.fr",
+      "active": true,
+      "validUntil": "2027-06-30",
+      "role": "Administratrice",
+      "phone": "+33 6 12 00 00 01",
+      "address": {
+        "street": "12 rue des Lilas",
+        "postalCode": "75011",
+        "city": "Paris"
+      },
+      "qualifications": ["Angular", "TypeScript", "Scrum Master", "ITIL v4"]
+    },
+    {
+      "id": "U-1002",
+      "name": "Lucas Bernard",
+      "email": "lucas.bernard@exemple.fr",
+      "active": true,
+      "validUntil": "2026-12-31",
+      "role": "Développeur",
+      "phone": "+33 6 12 00 00 02",
+      "address": {
+        "street": "8 avenue Jean Jaurès",
+        "postalCode": "69007",
+        "city": "Lyon"
+      },
+      "qualifications": ["Java", "Spring Boot", "Kubernetes"]
+    },
+    {
+      "id": "U-1003",
+      "name": "Léa Dubois",
+      "email": "lea.dubois@exemple.fr",
+      "active": false,
+      "validUntil": "2026-03-15",
+      "role": "Analyste",
+      "phone": "+33 6 12 00 00 03",
+      "address": {
+        "street": "3 place du Capitole",
+        "postalCode": "31000",
+        "city": "Toulouse"
+      },
+      "qualifications": ["SQL", "Power BI"]
+    },
+    {
+      "id": "U-1004",
+      "name": "Hugo Thomas",
+      "email": "hugo.thomas@exemple.fr",
+      "active": true,
+      "validUntil": "2028-01-15",
+      "role": "Chef de projet",
+      "phone": "+33 6 12 00 00 04",
+      "address": {
+        "street": "45 quai des Chartrons",
+        "postalCode": "33000",
+        "city": "Bordeaux"
+      },
+      "qualifications": ["PMP", "Prince2", "SAFe"]
+    },
+    {
+      "id": "U-1005",
+      "name": "Chloé Robert",
+      "email": "chloe.robert@exemple.fr",
+      "active": true,
+      "validUntil": "2027-09-01",
+      "role": "Designer UX",
+      "phone": "+33 6 12 00 00 05",
+      "address": {
+        "street": "17 rue de la République",
+        "postalCode": "13001",
+        "city": "Marseille"
+      },
+      "qualifications": ["Figma", "Accessibilité RGAA", "Design System"]
+    },
+    {
+      "id": "U-1006",
+      "name": "Nathan Richard",
+      "email": "nathan.richard@exemple.fr",
+      "active": false,
+      "validUntil": "2026-08-31",
+      "role": "Testeur",
+      "phone": "+33 6 12 00 00 06",
+      "address": {
+        "street": "22 boulevard Carnot",
+        "postalCode": "59000",
+        "city": "Lille"
+      },
+      "qualifications": ["ISTQB", "Cypress"]
+    },
+    {
+      "id": "U-1007",
+      "name": "Manon Petit",
+      "email": "manon.petit@exemple.fr",
+      "active": true,
+      "validUntil": "2027-03-31",
+      "role": "Architecte",
+      "phone": "+33 6 12 00 00 07",
+      "address": {
+        "street": "5 rue du Château",
+        "postalCode": "44000",
+        "city": "Nantes"
+      },
+      "qualifications": ["AWS", "TOGAF", "Terraform"]
+    },
+    {
+      "id": "U-1008",
+      "name": "Louis Durand",
+      "email": "louis.durand@exemple.fr",
+      "active": true,
+      "validUntil": "2026-11-30",
+      "role": "Développeur",
+      "phone": "+33 6 12 00 00 08",
+      "address": {
+        "street": "9 allée des Tilleuls",
+        "postalCode": "67000",
+        "city": "Strasbourg"
+      },
+      "qualifications": ["Angular", "RxJS", "NgRx"]
+    },
+    {
+      "id": "U-1009",
+      "name": "Inès Leroy",
+      "email": "ines.leroy@exemple.fr",
+      "active": false,
+      "validUntil": "2027-02-28",
+      "role": "Data Scientist",
+      "phone": "+33 6 12 00 00 09",
+      "address": {
+        "street": "30 rue Nationale",
+        "postalCode": "37000",
+        "city": "Tours"
+      },
+      "qualifications": ["Python", "Machine Learning"]
+    },
+    {
+      "id": "U-1010",
+      "name": "Gabriel Moreau",
+      "email": "gabriel.moreau@exemple.fr",
+      "active": true,
+      "validUntil": "2027-12-31",
+      "role": "DevOps",
+      "phone": "+33 6 12 00 00 10",
+      "address": {
+        "street": "14 cours Mirabeau",
+        "postalCode": "13100",
+        "city": "Aix-en-Provence"
+      },
+      "qualifications": ["GitLab CI", "Docker", "Linux"]
+    }
+  ]
+}
