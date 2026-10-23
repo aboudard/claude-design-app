@@ -37,6 +37,7 @@
       { field: 'validUntil', header: 'Date de validité' },
     ]"
     exportFilename="utilisateurs"
+    [exportFunction]="exportValue"
     [tableStyle]="{ 'min-width': '60rem' }"
     sortField="id"
     [sortOrder]="1"

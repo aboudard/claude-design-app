@@ -36,3 +36,13 @@ export function initials(name: string): string {
     .join('')
     .toUpperCase();
 }
+
+/** Valeur d'une cellule pour l'export CSV : dates en jj/MM/aaaa, guillemets échappés. */
+export function toCsvValue(data: unknown): string {
+  if (data instanceof Date) {
+    const dd = String(data.getDate()).padStart(2, '0');
+    const mm = String(data.getMonth() + 1).padStart(2, '0');
+    return `${dd}/${mm}/${data.getFullYear()}`;
+  }
+  return String(data).replace(/"/g, '""');
+}
