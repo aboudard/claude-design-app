@@ -1,5 +1,22 @@
-import { Component, computed, effect, inject, input, model, output } from '@angular/core';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+﻿import {
+  Component,
+  computed,
+  effect,
+  input,
+  model,
+  output,
+  signal,
+  untracked,
+} from '@angular/core';
+import {
+  FieldTree,
+  FormField,
+  email,
+  form,
+  maxLength,
+  pattern,
+  required,
+} from '@angular/forms/signals';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -10,10 +27,49 @@ import { InputTagsModule } from 'primeng/inputtags';
 import { MessageModule } from 'primeng/message';
 import { User, UserDraft } from '../user.model';
 
+interface UserFormValue {
+  name: string;
+  email: string;
+  active: boolean;
+  validUntil: Date | null;
+  role: string;
+  phone: string;
+  street: string;
+  postalCode: string;
+  city: string;
+  qualifications: string[];
+}
+
+const emptyForm = (): UserFormValue => ({
+  name: '',
+  email: '',
+  active: true,
+  validUntil: null,
+  role: '',
+  phone: '',
+  street: '',
+  postalCode: '',
+  city: '',
+  qualifications: [],
+});
+
+const toFormValue = (u: User): UserFormValue => ({
+  name: u.name,
+  email: u.email,
+  active: u.active,
+  validUntil: new Date(u.validUntil),
+  role: u.role,
+  phone: u.phone,
+  street: u.address.street,
+  postalCode: u.address.postalCode,
+  city: u.address.city,
+  qualifications: [...u.qualifications],
+});
+
 @Component({
   selector: 'app-user-form-dialog',
   imports: [
-    ReactiveFormsModule,
+    FormField,
     DialogModule,
     ButtonModule,
     InputTextModule,
@@ -27,8 +83,6 @@ import { User, UserDraft } from '../user.model';
   styleUrl: './user-form-dialog.scss',
 })
 export class UserFormDialog {
-  private readonly fb = inject(NonNullableFormBuilder);
-
   /** Utilisateur à éditer ; `null` pour une création. */
   readonly user = input<User | null>(null);
   readonly visible = model(false);
@@ -39,17 +93,15 @@ export class UserFormDialog {
     this.isEdit() ? "Modifier l'utilisateur" : 'Nouvel utilisateur',
   );
 
-  protected readonly form = this.fb.group({
-    name: ['', [Validators.required, Validators.maxLength(120)]],
-    email: ['', [Validators.required, Validators.email]],
-    active: [true],
-    validUntil: this.fb.control<Date | null>(null, Validators.required),
-    role: [''],
-    phone: [''],
-    street: [''],
-    postalCode: ['', Validators.pattern(/^\d{5}$/)],
-    city: [''],
-    qualifications: this.fb.control<string[]>([]),
+  protected readonly model = signal<UserFormValue>(emptyForm());
+
+  protected readonly form = form(this.model, (p) => {
+    required(p.name);
+    maxLength(p.name, 120);
+    required(p.email);
+    email(p.email);
+    required(p.validUntil);
+    pattern(p.postalCode, /^\d{5}$/);
   });
 
   constructor() {
@@ -57,32 +109,29 @@ export class UserFormDialog {
     effect(() => {
       if (!this.visible()) return;
       const u = this.user();
-      this.form.reset({
-        name: u?.name ?? '',
-        email: u?.email ?? '',
-        active: u?.active ?? true,
-        validUntil: u ? new Date(u.validUntil) : null,
-        role: u?.role ?? '',
-        phone: u?.phone ?? '',
-        street: u?.address.street ?? '',
-        postalCode: u?.address.postalCode ?? '',
-        city: u?.address.city ?? '',
-        qualifications: [...(u?.qualifications ?? [])],
+      // untracked : on lit `model` et on écrit dedans sans que l'effect en dépende.
+      // Il ne doit se relancer que si `visible` ou `user` changent, sinon chaque saisie
+      // réinitialiserait le formulaire.
+      untracked(() => {
+        this.model.set(u ? toFormValue(u) : emptyForm());
+        this.form().reset();
       });
     });
   }
 
-  protected invalid(name: keyof typeof this.form.controls): boolean {
-    const c = this.form.controls[name];
-    return c.invalid && (c.touched || c.dirty);
+  protected invalid(field: FieldTree<unknown>): boolean {
+    const s = field();
+    return s.invalid() && (s.touched() || s.dirty());
   }
-
-  protected submit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+  protected submit(event: Event): void {
+    // preventDefault : on gère l'envoi nous-mêmes ; sans cela le navigateur
+    // soumettrait le <form> et rechargerait la page.
+    event.preventDefault();
+    if (this.form().invalid()) {
+      this.form().markAsTouched();
       return;
     }
-    const v = this.form.getRawValue();
+    const v = this.model();
     this.saved.emit({
       id: this.user()?.id,
       name: v.name.trim(),

@@ -43,7 +43,7 @@ src/app/
     ├── user.service.ts      store signals en mémoire (MOCK_USERS) — point d'entrée futur de l'API
     ├── user-list/           p-table, filtres, sélection, ConfirmDialog, Toast
     ├── user-detail-dialog/  p-dialog lecture seule
-    └── user-form-dialog/    p-dialog + Reactive Forms (création / édition)
+    └── user-form-dialog/    p-dialog + Signal Forms (création / édition)
 ```
 
 ## Conventions Angular
@@ -56,8 +56,8 @@ src/app/
 - État local en `signal()` / `computed()` ; pas de `BehaviorSubject` pour de l'état d'UI.
 - Templates : `@if` / `@for (… ; track …)` / `@switch` — jamais `*ngIf` / `*ngFor`.
 - Pas d'appel de fonction coûteux dans les templates ; préférer un `computed()`.
-- Formulaires : les **nouveaux** formulaires utilisent Signal Forms (`@angular/forms/signals`, stable en v22).
-  Le formulaire existant (`user-form-dialog`) reste en Reactive Forms typés tant qu'aucune migration n'est demandée.
+- Formulaires : Signal Forms (`@angular/forms/signals`, stable en v22), liaison `[formField]`. Sur un nœud
+  `[formField]`, ne pas lier `[invalid]` ni poser `maxlength` (erreur de compilation NG8022) : utiliser les validateurs du schéma.
 - Pas de `ngClass` / `ngStyle` (liaisons `[class.x]` / `[style.x]`), pas d'import de `CommonModule`.
 - `host: {}` dans le décorateur plutôt que `@HostBinding` / `@HostListener`.
 - Référence officielle à jour : outil `get_best_practices` du serveur MCP `angular-cli`.

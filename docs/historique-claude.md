@@ -65,7 +65,7 @@ confirmation, dialog de détail, formulaire, recherche, filtre de statut, toasts
 | Primaire `red.600` (#dc2626) et non `red.500` | Blanc sur red-500 = 3,8:1 (échec WCAG AA) ; sur red-600 = 4,8:1. Réversible dans `theme/aura-rouge.preset.ts`. |
 | Police Inter | Police de la démo officielle PrimeNG / Aura. |
 | 3 composants (liste, détail, formulaire) + 1 service | Responsabilités séparées ; le service est le point de branchement futur de l'API. |
-| Reactive Forms typés | Choix initial ; Signal Forms (stable en v22) recommandé pour les **nouveaux** formulaires. |
+| Signal Forms | Migration de `user-form-dialog` (issue #2) ; Reactive Forms typés à l'origine. |
 | Store en mémoire (signals) | Pas d'API fournie ; 10 utilisateurs fictifs (`MOCK_USERS`). |
 | `ConfirmationService` / `MessageService` au niveau du composant | Isolation ; pas de dépendance globale. |
 | `AGENTS.md` + `CLAUDE.md` qui l'importe | Une seule source de vérité pour tous les assistants (Copilot lit `AGENTS.md`). |
