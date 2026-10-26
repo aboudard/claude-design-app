@@ -8,6 +8,7 @@ import { providePrimeNG } from 'primeng/config';
 import { routes } from './app.routes';
 import { AuraRouge } from './theme/aura-rouge.preset';
 import { PRIMENG_FR } from './theme/primeng-fr';
+import { PRIMEUI_LICENSE } from './theme/license.generated';
 
 registerLocaleData(localeFr);
 
@@ -27,8 +28,8 @@ export const appConfig: ApplicationConfig = {
         },
       },
       translation: PRIMENG_FR,
-      // PrimeNG 22+ : clé de licence PrimeUI requise (Community ou Commerciale).
-      // license: environment.primeuiLicense
+      // PrimeNG 22+ : clé PrimeUI requise ; générée localement, jamais commitée (voir README).
+      license: PRIMEUI_LICENSE,
     }),
   ],
 };
