@@ -17,11 +17,15 @@ Node.js ≥ 22.22.3 (ou ≥ 24.15) est requis par Angular CLI 22.
 Depuis la v22, PrimeNG exige une clé de licence PrimeUI : sans clé, un bandeau
 « Invalid PrimeUI License » s'affiche. La licence Community (gratuite) est réservée aux
 structures de moins de 10 employés / 1 M$ de CA ; au-delà, une licence commerciale par
-développeur est nécessaire. Ajoutez la clé dans `app.config.ts` :
+développeur est nécessaire. La clé n'est **jamais commitée** (dépôt public). Sur votre machine,
+créez le fichier `.primeui-license` (ignoré par git) à la racine, contenant uniquement la clé,
+ou définissez la variable d'environnement `PRIMEUI_LICENSE` (CI). Les commandes `npm start`,
+`npm run build`, `npm test`… exécutent d'abord `npm run license`, qui génère
+`src/app/theme/license.generated.ts` (ignoré par git) lu par `app.config.ts`. Sans clé,
+l'application fonctionne avec le bandeau de licence.
 
-```ts
-providePrimeNG({ ..., license: environment.primeuiLicense })
-```
+Si vous lancez `npx ng …` directement, exécutez avant `npm run license`. La clé est embarquée
+dans le bundle front : ce n'est pas un secret côté navigateur, mais elle ne doit pas être dans le dépôt.
 
 Alternative sans clé : la branche 21 (`primeng@21`, Angular 21), quasi identique côté API.
 

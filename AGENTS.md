@@ -77,6 +77,7 @@ src/app/
 - Changer la couleur ou les tokens : modifier `theme/aura-rouge.preset.ts` (via `definePreset`), pas le SCSS.
 - **Licence** : PrimeNG 22 exige une clé PrimeUI (`providePrimeNG({ license })`). Sans clé, un bandeau
   « Invalid PrimeUI License » s'affiche : ce n'est pas un bug du code. Ne jamais écrire de clé en dur dans le dépôt.
+  La clé vient de `.primeui-license` ou de `PRIMEUI_LICENSE` via `scripts/gen-license.mjs` (voir README).
 - En cas de doute sur une API : lire `node_modules/primeng/types/primeng-<composant>.d.ts` ou utiliser le
   serveur MCP `primeng` plutôt que de se fier à la documentation de versions antérieures.
 

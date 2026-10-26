@@ -50,6 +50,8 @@ CLAUDE.local.md
 # Secrets
 .env
 .env.*
+.primeui-license
+src/app/theme/license.generated.ts
 
 # Fichiers déposés par l'application Claude
 /Claude outputs/

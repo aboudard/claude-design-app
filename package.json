@@ -1,7 +1,14 @@
-{
+﻿{
   "name": "gestion-utilisateurs",
   "version": "0.0.0",
   "scripts": {
+    "license": "node scripts/gen-license.mjs",
+    "prestart": "npm run license",
+    "prebuild": "npm run license",
+    "prebuild:dev": "npm run license",
+    "prewatch": "npm run license",
+    "pretest": "npm run license",
+    "pretest:watch": "npm run license",
     "ng": "ng",
     "start": "ng serve",
     "api": "json-server --watch mock-api/db.json --port 3000",
